@@ -17,12 +17,11 @@ contract UniswapV3LiqLock {
     }
 
     function lockNFTandMint(uint256 tokenId, address mintAddress) external {
-
-        uint256 liquidity = NF_MANAGER.positions(tokenId).liquidity;
-        require(liquidity > 0, "no liquidity");
-
-        address operator = NF_MANAGER.positions(tokenId).operator;
+        (, address operator, , , , , , uint256 liquidity, , , , ) = NF_MANAGER
+            .positions(tokenId);
+        
         require(operator == msg.sender, "not the operator");
+        require(liquidity > 0, "no liquidity");
 
         NF_MANAGER.safeTransferFrom(msg.sender, address(this), tokenId);
 
