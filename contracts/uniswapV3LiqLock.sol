@@ -6,7 +6,7 @@ import "./interfaces/IERC20.sol";
 import "@uniswap/v3-periphery/contracts/interfaces/INonfungiblePositionManager.sol";
 
 contract UniswapV3LiqLock {
-    mapping(address => uint256) public addressToNFTid;
+    mapping(uint256 => address) public idToAddress;
 
     address public owner;
     INonfungiblePositionManager public constant NF_MANAGER =
@@ -16,17 +16,17 @@ contract UniswapV3LiqLock {
         owner = msg.sender;
     }
 
-    function lockNFTandMint(uint256 tokenId, address mintAddress)
-        external
-    {
-        uint256 liquidity = NF_MANAGER.positions(tokenId).liquidity;
-        address operator = NF_MANAGER.positions(tokenId).operator;
+    function lockNFTandMint(uint256 tokenId, address mintAddress) external {
 
+        uint256 liquidity = NF_MANAGER.positions(tokenId).liquidity;
+        require(liquidity > 0, "no liquidity");
+
+        address operator = NF_MANAGER.positions(tokenId).operator;
         require(operator == msg.sender, "not the operator");
 
         NF_MANAGER.safeTransferFrom(msg.sender, address(this), tokenId);
 
-        addressToNFTid[tokenId] = msg.sender;
+        idToAddress[tokenId] = msg.sender;
 
         mint(mintAddress, liquidity);
     }
