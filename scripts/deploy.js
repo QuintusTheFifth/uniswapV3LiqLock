@@ -14,20 +14,25 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const UniswapV3LiqLock = await hre.ethers.getContractFactory("UniswapV3LiqLock");
-  const uniswapV3LiqLock = await UniswapV3LiqLock.deploy();
+  const UniswapV3LiqLock = await hre.ethers.getContractFactory(
+    "UniswapV3LiqLock"
+  );
+  const uniswapV3LiqLock = await UniswapV3LiqLock.deploy(
+    0xc36442b4a4522e871399cd717abdd847ab11fe88
+  );
 
   await uniswapV3LiqLock.deployed();
 
   console.log("UniswapV3LiqLock deployed to:", uniswapV3LiqLock.address);
 
-
   const TestToken = await hre.ethers.getContractFactory("TestToken");
-  const testToken = await TestToken.deploy("TestToken",
+  const testToken = await TestToken.deploy(
+    "TestToken",
     "TEST",
     18,
     1000000000000000000000000,
-    uniswapV3LiqLock.address);
+    uniswapV3LiqLock.address
+  );
 
   await testToken.deployed();
 

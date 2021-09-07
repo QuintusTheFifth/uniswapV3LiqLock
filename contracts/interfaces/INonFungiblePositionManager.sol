@@ -26,6 +26,8 @@ interface INonfungiblePositionManager {
         uint256 tokenId
     ) external;
 
+    function ownerOf(uint256 tokenId) external returns(address owner);
+
 
       /// @notice Returns the position information associated with a given token ID.
     /// @dev Throws if the token ID is not valid.

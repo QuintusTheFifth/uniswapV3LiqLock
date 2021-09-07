@@ -10,17 +10,18 @@ contract UniswapV3LiqLock {
     mapping(uint256 => address) public idToAddress;
 
     INonfungiblePositionManager private NF_MANAGER;
+    // INonfungiblePositionManager(
+    //         0xC36442b4a4522E871399CD717aBDD847Ab11FE88
+    //     );
 
-    constructor() {
-        NF_MANAGER = INonfungiblePositionManager(
-            0xC36442b4a4522E871399CD717aBDD847Ab11FE88
-        );
+    constructor(INonfungiblePositionManager _nfManager) {
+        NF_MANAGER = _nfManager;
     }
 
     function lockNFTandMint(uint256 tokenId, address mintAddress) external {
-        (address operator, uint256 liquidity) = getPositionInfo(tokenId);
+        uint256 liquidity= getLiquidity(tokenId);
 
-        require(operator == msg.sender, "not the operator");
+        require(NF_MANAGER.ownerOf(tokenId) == msg.sender, "not the owner");
         require(liquidity > 0, "no liquidity");
 
         NF_MANAGER.transferFrom(msg.sender, address(this), tokenId);
@@ -30,15 +31,15 @@ contract UniswapV3LiqLock {
         mint(mintAddress, liquidity);
     }
 
-    function getPositionInfo(uint256 tokenId)
+    function getLiquidity(uint256 tokenId)
         internal
         view
-        returns (address, uint256)
+        returns (uint256)
     {
-        (, address operator, , , , , , uint256 liquidity, , , , ) = NF_MANAGER
+        (, , , , , , , uint256 liquidity, , , , ) = NF_MANAGER
             .positions(tokenId);
 
-        return (operator, liquidity);
+        return liquidity;
     }
 
     function mint(address _tokenAddress, uint256 amount)
