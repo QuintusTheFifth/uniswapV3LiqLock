@@ -4,6 +4,9 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 const hre = require("hardhat");
+const {
+  Contract,
+} = require("hardhat/internal/hardhat-network/stack-traces/model");
 
 async function main() {
   // Hardhat always runs the compile task when running scripts with its command
@@ -17,9 +20,11 @@ async function main() {
   const UniswapV3LiqLock = await hre.ethers.getContractFactory(
     "UniswapV3LiqLock"
   );
-  const uniswapV3LiqLock = await UniswapV3LiqLock.deploy(
-    0xc36442b4a4522e871399cd717abdd847ab11fe88
+
+  const INfManager = new ethers.Contract(
+    "0xc36442b4a4522e871399cd717abdd847ab11fe88"
   );
+  const uniswapV3LiqLock = await UniswapV3LiqLock.deploy(INfManager);
 
   await uniswapV3LiqLock.deployed();
 
